@@ -1,15 +1,21 @@
 use tokens::{Attr, Const, Function, Token, Var};
 
-type MutRefVec<'a, T> = &'a mut Vec<T>;
-
-pub struct Program<'a> {
-    pub consts: MutRefVec<'a, Const>,
-    pub vars: MutRefVec<'a, Var>,
-    pub functions: MutRefVec<'a, Function>
+#[derive(Clone, Debug, Default)]
+pub struct Program {
+    pub consts: Vec<Const>,
+    pub vars: Vec<Var>,
+    pub functions: Vec<Function>,
 }
 
 
-impl<'a> Program<'a> {
+impl Program {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+
+impl Program {
     pub fn add_constant(&mut self, name: String, value: Token) {
         self.consts.push(Const { name, value })
     }
