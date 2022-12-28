@@ -24,7 +24,7 @@ impl Program {
         self.vars.push(Var { name, value })
     }
 
-    pub fn add_function(&mut self, name: String, attrs: Vec<Attr>) {
-        self.functions.push(Function { name, attrs })
+    pub fn add_function(&mut self, name: String, attrs: Vec<Attr>, contents: Vec<Token>) {
+        self.functions.push(Function { name, attrs, contents })
     }
 }
