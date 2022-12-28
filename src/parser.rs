@@ -20,8 +20,16 @@ impl<'a> Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
-    pub fn parse(&self) {
+    pub fn parse(&mut self) {
         let sections = self.source.sections();
         let tokenized_sections = sections.tokenise();
+
+        tokenized_sections
+            .unwrap()
+            .into_iter()
+            .for_each(|(mut fb, c)| {
+                fb.contents = Some(c);
+                self.program.functions.push(fb.build());
+            });
     }
 }
