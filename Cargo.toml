@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 indexmap = "1.9.2"
 tokens = { path = "../tokens" }
+errors = { path = "../errors" }
