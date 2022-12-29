@@ -25,5 +25,5 @@ fn main() {
 
     parser.parse();
 
-    println!("{:#?}", parser.program.functions);
+    println!("{:#?}", parser.program);
 }
