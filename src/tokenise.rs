@@ -98,26 +98,36 @@ pub fn tokenise_line(line: String, risc: bool, tokens: &mut Vec<Token>) -> Resul
 
             match r {
                 Ok(_) => (),
-                Err(e) => return Err(new_error("Failed to parse `mov` command", Some(Box::new(e)))),
+                Err(e) => return Err(new_error(format!("Failed to parse `mov` command: {line:?}"), Some(Box::new(e)))),
             };
+
+            tokens.push(Token::NOP);
+            // TODO Add result to token vector
         },
         "ldr" => {
             let r = tokenise_parts::ldr::mode(risc)(command, tokens);
 
             match r {
                 Ok(_) => (),
-                Err(e) => return Err(new_error("Failed to parse `ldr` command", Some(Box::new(e))))
+                Err(e) => return Err(new_error(format!("Failed to parse `ldr` command: {line:?}"), Some(Box::new(e))))
             }
+
+            tokens.push(Token::NOP);
+            // TODO Add result to token vector
         },
         "run" => {
-            tokens.push(Token::FUNC_REF(command
+            let mut v = command
                 .into_iter()
-                .map(|s| s.to_string())
-                .collect::<Vec<_>>()
-                .join(" ")
-            ));
+                .map(|s| Token::FuncRef(s.into()))
+                .collect::<Vec<_>>();
+
+            tokens.append(&mut v);
+
         },
-        _ => return Err(new_error("Invalid command", None)),
+        c => {
+            println!("Invalid command {c}");
+            return Err(new_error("Invalid command", None))
+        },
     };
 
     Ok(())
