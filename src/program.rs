@@ -1,4 +1,4 @@
-use tokens::{Attr, Const, Function, Token, Var};
+use tokens::prelude::{Attr, Const, Function, NewData, Token, Var};
 
 #[derive(Clone, Debug, Default)]
 pub struct Program {
@@ -17,11 +17,11 @@ impl Program {
 
 impl Program {
     pub fn add_constant(&mut self, name: String, value: Token) {
-        self.consts.push(Const { name, value })
+        self.consts.push(Const::new(name, value))
     }
 
     pub fn add_variable(&mut self, name: String, value: Token) {
-        self.vars.push(Var { name, value })
+        self.vars.push(Var::new(name, value))
     }
 
     pub fn add_function(&mut self, name: String, attrs: Vec<Attr>, contents: Vec<Token>) {
