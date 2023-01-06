@@ -16,14 +16,19 @@ pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeE
 }
 
 pub fn tokenise_risc(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeError> {
-    let data = base_tokenise(&command)?;
+    let data = base_tokenise(&command);
 
-    match data {
-        Some(token) => (),
-        None => (),
+    if data.is_err() {
+        return Err(new_error(format!(""), Some(Box::new(data.unwrap_err()))));
     }
 
-    Ok(())
+    match data.unwrap() {
+        Some(token) => {
+            tokens.push(token);
+            Ok(())
+        },
+        None => Ok(()),
+    }
 }
 
 fn base_tokenise(command: &Vec<&str>) -> Result<Option<Token>, LLFeError> {
@@ -75,7 +80,7 @@ fn parse_source(source: &str) -> Result<Token, LLFeError> {
 
     if source.len() < 4 {
         match source.parse::<i32>() {
-            Ok(i) => return Ok(Token::Int32(source.parse().unwrap())),
+            Ok(i) => return Ok(Token::Int32(i)),
             Err(_) => return Err(new_error(format!("Failed to parse value as number: {source:?}"), None))
         };
     }
