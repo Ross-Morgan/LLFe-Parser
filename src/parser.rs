@@ -1,3 +1,4 @@
+use tokens::DataBuilder;
 use tokens::prelude::{Const, Data, NewData, Token, Var};
 
 use crate::program::Program;
@@ -38,7 +39,6 @@ impl<'a> Parser<'a> {
         tokenized_sections
             .into_iter()
             .for_each(|(mut fb, c)| {
-
                 fb.contents = Some(c.clone());
 
                 match fb.name.as_ref().unwrap().as_str() {
@@ -51,6 +51,11 @@ impl<'a> Parser<'a> {
 }
 
 
-fn parse_data_section<T: NewData + Data>(contents: &Vec<Token>, v: &mut Vec<T>) {
+fn parse_data_section<T: NewData + Data>(contents: &Vec<Token>, _v: &mut Vec<T>) {
+    let builder = DataBuilder::default();
+
+    // TODO add tokens for data
+
     dbg!(contents);
+    todo!();
 }
