@@ -1,9 +1,9 @@
 use parser::{parser::Parser, program::Program};
 
 const SOURCE: &'static str = "
-#[thumb = true]
+#[thumb]
 function_1:
-    Actually useful code
+    mov r0, #0x20
 
 #[thumb]
 function_2:
