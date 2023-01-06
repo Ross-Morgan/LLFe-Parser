@@ -1,5 +1,4 @@
-
-use tokens::{Const, Data, Var, FunctionBuilder, Token};
+use tokens::prelude::{Const, Data, NewData, Token, Var};
 
 use crate::program::Program;
 use crate::sections::SplitSections;
@@ -24,20 +23,27 @@ impl<'a> Parser<'a> {
 impl<'a> Parser<'a> {
     pub fn parse(&mut self) {
         let sections = self.source.sections();
-        let tokenized_sections = sections.tokenise();
+
+        let tokenized_sections = match sections.tokenise() {
+            Ok(i) => i,
+            Err(e) => {
+                println!("{e}");
+                return;
+            }
+        };
 
         let mut const_buffer = vec![];
         let mut var_buffer = vec![];
 
         tokenized_sections
-            .unwrap()
             .into_iter()
             .for_each(|(mut fb, c)| {
-                fb.contents = Some(c);
+
+                fb.contents = Some(c.clone());
 
                 match fb.name.as_ref().unwrap().as_str() {
-                    "consts" => parse_data_section::<Const>(&mut const_buffer),
-                    "vars" => parse_data_section::<Var>(&mut var_buffer),
+                    "consts" => parse_data_section::<Const>(&c, &mut const_buffer),
+                    "vars" => parse_data_section::<Var>(&c, &mut var_buffer),
                     _ => self.program.functions.push(fb.build()),
                 };
             });
@@ -45,10 +51,6 @@ impl<'a> Parser<'a> {
 }
 
 
-fn parse_data_section<'a, T: Data>(contents: &Vec<Token>, v: &'a mut Vec<T>) -> &'a mut Vec<T> {
-    contents
-        .iter()
-        .map(|t|)
-
-    v
+fn parse_data_section<T: NewData + Data>(contents: &Vec<Token>, v: &mut Vec<T>) {
+    dbg!(contents);
 }
