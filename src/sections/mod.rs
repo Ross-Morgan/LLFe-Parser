@@ -14,6 +14,7 @@ fn update_buffers(res: &mut IndexMap<String, Vec<String>>, attrs: &mut Vec<Strin
 
     contents.trim_end();
     contents.dedent();
+
     res.insert(name_with_attrs.trim_start().to_string(), contents.clone());
 
     attrs.clear();
@@ -43,19 +44,19 @@ impl SplitSections for String {
 
             if line.is_empty() {
                 if !name.is_empty() {
-                    contents.push("".to_string());
+                    contents.push("".into());
                 }
             }
             else
             if line.is_attr() {
-                attrs.push(line.to_string());
+                attrs.push(line.into());
             }
             else
             if line.is_label() {
-                name = line.replace(":", "").to_string();
+                name = line.replace(":", "").into();
             }
             else {
-                contents.push(line.to_string());
+                contents.push(line.into());
             }
         }
 
