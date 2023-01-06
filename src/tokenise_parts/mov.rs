@@ -27,19 +27,19 @@ pub fn tokenise_risc(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), 
 }
 
 fn base_tokenise(command: &Vec<&str>) -> Result<Option<Token>, LLFeError> {
-    let target = command.get(0).expect("No target register specified").trim();
+    let target = command.get(0).expect("No target register specified").trim().trim_end_matches(",");
     let source = command.get(1).expect("No source specified").trim();
 
-    if target.get(0..1) != Some("r") { return Err(new_error("Missing register specified", None)); }
+    if target.get(0..1) != Some("r") { return Err(new_error(format!("Missing register specifier: {target:?}"), None)); }
 
     let parsed_target = match parse_target(target) {
         Ok(t) => t,
-        Err(e) => return Err(new_error("", Some(Box::new(e)))),
+        Err(e) => return Err(new_error(format!("Failed to parse target: {target:?}"), Some(Box::new(e)))),
     };
 
     let parsed_source = match parse_source(source) {
         Ok(t) => t,
-        Err(e) => return Err(new_error("", Some(Box::new(e)))),
+        Err(e) => return Err(new_error(format!("Failed to parsed source: {source:?}"), Some(Box::new(e)))),
     };
 
     Ok(Some(Token::MOV(Box::new(parsed_target), Box::new(parsed_source))))
@@ -48,35 +48,36 @@ fn base_tokenise(command: &Vec<&str>) -> Result<Option<Token>, LLFeError> {
 
 fn parse_target(source: &str) -> Result<Token, LLFeError> {
     if source.is_empty() {
-        return Err(new_error("No target specified", None));
+        return Err(new_error(format!("No target specified in {source:?}"), None));
     }
 
     let r = match source.get(0..1).unwrap() {
         "#" => parse_immediate(source),
         "r" => parse_register(source),
-        _ => Ok(Token::REGISTER(0)),
+        _ => Ok(Token::Register(0)),
     };
 
-
-    Ok(Token::NOP)
+    match r {
+        Ok(t) => Ok(t),
+        Err(e) => Err(new_error(format!("Failed to parse line: {source:?}"), Some(Box::new(e))))
+    }
 }
 
 
 fn parse_source(source: &str) -> Result<Token, LLFeError> {
     if source.len() < 2 {
         match source {
-            "#" => return Err(new_error("No immediate specified", None)),
-            "r" => return Err(new_error("No register specified", None)),
-            _ => return Err(new_error("Invalid identifier", None)),
+            "#" => return Err(new_error(format!("No immediate specified: {source:?}"), None)),
+            "r" => return Err(new_error(format!("No register specified: {source:?}"), None)),
+            _ => return Err(new_error(format!("Invalid identifier: {source:?}"), None)),
         }
     }
 
     if source.len() < 4 {
-        if source.chars().all(|c| c.is_numeric()) {
-            return Ok(Token::INT32(source.parse().unwrap()));
-        } else {
-            return Err(new_error("", None));
-        }
+        match source.parse::<i32>() {
+            Ok(i) => return Ok(Token::Int32(source.parse().unwrap())),
+            Err(_) => return Err(new_error(format!("Failed to parse value as number: {source:?}"), None))
+        };
     }
 
     if source.starts_with("#") {
@@ -86,7 +87,7 @@ fn parse_source(source: &str) -> Result<Token, LLFeError> {
         }
     } else if source.starts_with("=") {
         // Parse variable
-        Ok(Token::VAR_REF(String::from("")))
+        Ok(Token::VarRef(String::from("")))
     } else {
         Err(new_error("No immediate or reference specified", None))
     }
