@@ -99,10 +99,7 @@ pub fn tokenise_line(line: String, risc: bool, tokens: &mut Vec<Token>) -> Resul
             match r {
                 Ok(_) => (),
                 Err(e) => return Err(new_error(format!("Failed to parse `mov` command: {line:?}"), Some(Box::new(e)))),
-            };
-
-            tokens.push(Token::NOP);
-            // TODO Add result to token vector
+            }
         },
         "ldr" => {
             let r = tokenise_parts::ldr::mode(risc)(command, tokens);
@@ -111,9 +108,6 @@ pub fn tokenise_line(line: String, risc: bool, tokens: &mut Vec<Token>) -> Resul
                 Ok(_) => (),
                 Err(e) => return Err(new_error(format!("Failed to parse `ldr` command: {line:?}"), Some(Box::new(e))))
             }
-
-            tokens.push(Token::NOP);
-            // TODO Add result to token vector
         },
         "run" => {
             let mut v = command
