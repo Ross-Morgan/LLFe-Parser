@@ -1,8 +1,8 @@
 use tokens::Token;
 
 use super::literal::{self, parse_register, parse_immediate};
-
 use errors::{LLFeError, new_error};
+
 
 pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeError> {
     let data = base_tokenise(&command)?;
@@ -19,7 +19,7 @@ pub fn tokenise_risc(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), 
     let data = base_tokenise(&command);
 
     if data.is_err() {
-        return Err(new_error(format!(""), Some(Box::new(data.unwrap_err()))));
+        return Err(new_error(format!("Failed to tokenise command (risc): {command:?}"), Some(Box::new(data.unwrap_err()))));
     }
 
     match data.unwrap() {
@@ -78,21 +78,10 @@ fn parse_source(source: &str) -> Result<Token, LLFeError> {
         }
     }
 
-    if source.len() < 4 {
-        match source.parse::<i32>() {
-            Ok(i) => return Ok(Token::Int32(i)),
-            Err(_) => return Err(new_error(format!("Failed to parse value as number: {source:?}"), None))
-        };
-    }
-
     if source.starts_with("#") {
-        match literal::parse_immediate(source) {
-            Ok(s) => Ok(s),
-            Err(e) => Err(e),
-        }
+        literal::parse_immediate(source)
     } else if source.starts_with("=") {
-        // Parse variable
-        Ok(Token::VarRef(String::from("")))
+        Ok(Token::VarRef(String::from("<placeholder var>")))
     } else {
         Err(new_error("No immediate or reference specified", None))
     }
