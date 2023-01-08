@@ -1,7 +1,7 @@
-use errors::LLFeError;
+use errors::Result;
 use tokens::Token;
 
-pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeError> {
+pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<()> {
     let registers = base_tokenise(&command);
 
     match registers {
@@ -13,7 +13,7 @@ pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeE
 }
 
 
-pub fn tokenise_risc(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeError> {
+pub fn tokenise_risc(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<()> {
     let registers = base_tokenise(&command);
 
     match registers {
@@ -40,7 +40,7 @@ fn base_tokenise(command: &Vec<&str>) -> Option<Token> {
     Some(Token::LDR(parsed_target_reg, parsed_source_reg))
 }
 
-pub fn mode(risc: bool) -> impl Fn(Vec<&str>, &mut Vec<Token>) -> Result<(), LLFeError>
+pub fn mode(risc: bool) -> impl Fn(Vec<&str>, &mut Vec<Token>) -> Result<()>
 {
     match risc {
         true => tokenise_risc,
