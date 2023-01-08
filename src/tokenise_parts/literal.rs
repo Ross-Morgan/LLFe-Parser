@@ -16,7 +16,7 @@ pub fn parse_immediate(immediate: &str) -> Result<Token, LLFeError> {
                 "0x" if immediate.len() > 3 => parse_base(immediate.get(3..immediate.len()).unwrap(), 16),
                 "0o" if immediate.len() > 3 => parse_base(immediate.get(3..immediate.len()).unwrap(), 08),
                 "0b" if immediate.len() > 3 => parse_base(immediate.get(3..immediate.len()).unwrap(), 02),
-                s => return Err(new_error(format!("Invalid base specifier: {immediate:?}"), None))
+                _ => return Err(new_error(format!("Invalid base specifier: {immediate:?}"), None)),
             };
 
             match parsed {
