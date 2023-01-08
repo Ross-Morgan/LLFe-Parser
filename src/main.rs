@@ -7,7 +7,7 @@ function_1:
 
 #[thumb]
 function_2:
-    mov r7, #0x1
+    mov r7, #0b110101
     mov r0, #0x64
 
 function_3:
@@ -25,5 +25,5 @@ fn main() {
 
     parser.parse();
 
-    println!("{:#?}", parser.program);
+    dbg!(program);
 }
