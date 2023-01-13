@@ -1,8 +1,7 @@
+use errors::{LLFeError, new_error};
 use tokens::Token;
 
-use super::literal::{self, parse_register, parse_immediate};
-use errors::{LLFeError, new_error};
-
+use crate::literal::{self, parse_register, parse_immediate};
 
 pub fn tokenise(command: Vec<&str>, tokens: &mut Vec<Token>) -> Result<(), LLFeError> {
     let data = base_tokenise(&command)?;
@@ -56,10 +55,11 @@ fn parse_target(source: &str) -> Result<Token, LLFeError> {
         return Err(new_error(format!("No target specified in {source:?}"), None));
     }
 
-    let r = match source.get(0..1).unwrap() {
-        "#" => parse_immediate(source),
-        "r" => parse_register(source),
-        _ => Ok(Token::Register(0)),
+    let r = match source.get(0..1) {
+        Some("#") => parse_immediate(source),
+        Some("r") => parse_register(source),
+        Some(_) => Ok(Token::Register(0)),
+        None => return Err(new_error(format!("Invalid starting character {source:?}"), None))
     };
 
     match r {
